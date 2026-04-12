@@ -4,10 +4,9 @@
 *.key
 *.pem
 
-# Google Cloud Service Account Keys (SECURITY)
+# Google Cloud Service Account Keys
 *.json
 !package.json
-!docs/evolution.json
 
 # IDE
 .cursor/
@@ -29,42 +28,11 @@ build/
 .DS_Store
 Thumbs.db
 
-# Release artifacts (not tracked)
-.create_release.py
-.release_notes.md
-
-# Runtime data (should not be committed)
-drive/
-ouroboros_repo/
-nohup.out
-output.log
-*.json.tmp
-
-# Commercial scripts (workspace, not core)
-analyze_*.py
-contact_*.py
-apply_*.py
-check_inbox.py
-deepseek_*.py
-bot.log
-valid_emails.txt
-crm.db
+# Backend
+backend/__pycache__/
+backend/*.pyc
 *.db
-debug_path.py
-webhook_receiver.py
-sauvegarde_*.sh
 
-# Test directories
-_test_*/
-_unused_*/
-_demo*/
-demos*/
-applications/
-data/
-database/
-
-# Node.js (commercial tools)
-node_modules/
-*.js
-!colab_*.js
-!ouroboros/**/*.js
+# Frontend
+frontend/node_modules/
+frontend/dist/

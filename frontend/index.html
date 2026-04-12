@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Conta Annual - Gestion Comptable</title>
+  <link rel="stylesheet" href="src/style.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Conta Annual</h1>
+      <p>Gestion des déclarations fiscales annuelles</p>
+    </header>
+    
+    <main>
+      <section class="auth" v-if="!isAuthenticated">
+        <h2>Connexion</h2>
+        <form @submit.prevent="login">
+          <input type="email" v-model="email" placeholder="Email" required>
+          <input type="password" v-model="password" placeholder="Mot de passe" required>
+          <button type="submit">Se connecter</button>
+        </form>
+      </section>
+      
+      <section class="dashboard" v-else>
+        <div class="stats">
+          <div class="card">
+            <h3>Déclarations</h3>
+            <p class="count">{{ declarations.length }}</p>
+          </div>
+          <div class="card">
+            <h3>En attente</h3>
+            <p class="count">{{ pendingCount }}</p>
+          </div>
+          <div class="card">
+            <h3>Validées</h3>
+            <p class="count">{{ validatedCount }}</p>
+          </div>
+        </div>
+        
+        <section class="declarations">
+          <h2>Mes Déclarations</h2>
+          <button @click="showNewDeclaration = true">Nouvelle Déclaration</button>
+          
+          <table>
+            <thead>
+              <tr>
+                <th>Année</th>
+                <th>Type</th>
+                <th>Statut</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="decl in declarations" :key="decl.id">
+                <td>{{ decl.year }}</td>
+                <td>{{ decl.type }}</td>
+                <td :class="decl.status">{{ decl.status }}</td>
+                <td>{{ formatDate(decl.date) }}</td>
+                <td>
+                  <button @click="viewDeclaration(decl)">Voir</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
+      </section>
+    </main>
+  </div>
+  
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="src/app.js"></script>
+</body>
+</html>
