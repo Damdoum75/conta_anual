@@ -1,5 +1,14 @@
 {
+  "private": true,
+  "scripts": {
+    "dev": "vite frontend",
+    "build": "vite build frontend --outDir ../dist --emptyOutDir",
+    "preview": "vite preview --port 4173"
+  },
   "dependencies": {
     "@modelcontextprotocol/server-filesystem": "^2026.1.14"
+  },
+  "devDependencies": {
+    "vite": "^5.4.0"
   }
 }
