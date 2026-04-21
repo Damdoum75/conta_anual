@@ -1,7 +1,7 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from datetime import timedelta
+from datetime import timedelta, datetime
 import json
 
 from app.db.database import get_db
@@ -9,7 +9,10 @@ from app.core.security import (
     get_password_hash,
     verify_password,
     create_access_token,
-    get_current_active_user
+    get_current_active_user,
+    normalize_nie_dni,
+    is_valid_spanish_nie_dni,
+    user_has_access,
 )
 from app.core.config import settings
 from app.models.models import User, TaxReturn, TaxReturnStatus, Coupon, TaxRule
@@ -20,7 +23,7 @@ from app.schemas.schemas import (
     TaxRuleResponse, TaxRuleCreate, CouponValidateRequest, CouponValidateResponse
 )
 from app.services.irpf_calculator import calcular_resultado_irpf, comparar_declaraciones
-from app.services.payment_service import create_checkout_session
+from app.services.payment_service import create_checkout_session, create_monthly_access_checkout_session
 from app.services.pdf_service import generar_pdf_modelo100
 from app.services.coupon_service import validate_coupon, use_coupon
 
@@ -37,12 +40,28 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="El email ya está registrado"
         )
+
+    normalized_nie = None
+    if user_data.nie:
+        normalized_nie = normalize_nie_dni(user_data.nie)
+        if not is_valid_spanish_nie_dni(normalized_nie):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="NIE/DNI invalide"
+            )
+        result = await db.execute(select(User).where(User.nie == normalized_nie))
+        existing_nie_user = result.scalar_one_or_none()
+        if existing_nie_user:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Ce NIE/DNI est déjà utilisé"
+            )
     
     db_user = User(
         email=user_data.email,
         password_hash=get_password_hash(user_data.password),
         full_name=user_data.full_name,
-        nie=user_data.nie,
+        nie=normalized_nie,
     )
     db.add(db_user)
     await db.commit()
@@ -77,7 +96,56 @@ async def login(user_data: UserLogin, db: AsyncSession = Depends(get_db)):
 
 @router.get("/users/me", response_model=UserResponse)
 async def get_current_user_info(current_user: User = Depends(get_current_active_user)):
+    setattr(current_user, "has_access", user_has_access(current_user))
     return current_user
+
+
+@router.post("/billing/trial/start", response_model=UserResponse)
+async def start_trial(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    now = datetime.utcnow()
+    if current_user.trial_started_at and current_user.trial_ends_at and current_user.trial_ends_at <= now:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Essai déjà terminé"
+        )
+
+    if not current_user.trial_started_at:
+        current_user.trial_started_at = now
+        current_user.trial_ends_at = now + timedelta(days=settings.TRIAL_DAYS)
+        await db.commit()
+        await db.refresh(current_user)
+
+    setattr(current_user, "has_access", user_has_access(current_user, now=now))
+    return current_user
+
+
+@router.post("/billing/monthly/checkout", response_model=CheckoutResponse)
+async def create_monthly_checkout(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_active_user),
+):
+    if not current_user.nie:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="NIE/DNI requis"
+        )
+    normalized_nie = normalize_nie_dni(current_user.nie)
+    if not is_valid_spanish_nie_dni(normalized_nie):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="NIE/DNI invalide"
+        )
+    current_user.nie = normalized_nie
+    await db.commit()
+
+    session = create_monthly_access_checkout_session(
+        user_id=current_user.id,
+        nie=normalized_nie,
+    )
+    return CheckoutResponse(checkout_url=session.url, free=False, discount_percent=0)
 
 
 @router.post("/tax-returns/", response_model=TaxReturnResponse)
@@ -201,14 +269,15 @@ async def calculate_tax_return(
     tax_return.calculation_result = json.dumps(resultado)
     tax_return.raw_answers = json.dumps(calculation_data.raw_answers)
     tax_return.is_joint_declaration = calculation_data.is_joint_declaration
-    tax_return.status = TaxReturnStatus.PENDING_PAYMENT
+    has_access = user_has_access(current_user)
+    tax_return.status = TaxReturnStatus.PAID if has_access else TaxReturnStatus.PENDING_PAYMENT
     
     await db.commit()
     
     return {
         "tax_return_id": tax_return_id,
         "resultado": resultado,
-        "requires_payment": True,
+        "requires_payment": not has_access,
     }
 
 
@@ -311,13 +380,13 @@ async def validate_coupon_endpoint(
 @router.post("/payments/webhook")
 async def payment_webhook(
     payload: bytes,
-    signature: str,
+    stripe_signature: str = Header(None, alias="stripe-signature"),
     db: AsyncSession = Depends(get_db)
 ):
     from app.services.payment_service import construct_webhook_event
     
     try:
-        event = construct_webhook_event(payload, signature)
+        event = construct_webhook_event(payload, stripe_signature)
     except ValueError:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -326,16 +395,28 @@ async def payment_webhook(
     
     if event.type == "checkout.session.completed":
         session = event.data.object
-        tax_return_id = int(session.metadata.get("tax_return_id", 0))
-        
-        result = await db.execute(
-            select(TaxReturn).where(TaxReturn.id == tax_return_id)
-        )
-        tax_return = result.scalar_one_or_none()
-        
-        if tax_return:
-            tax_return.status = TaxReturnStatus.PAID
-            await db.commit()
+        metadata = session.metadata or {}
+        kind = metadata.get("kind")
+
+        if kind == "monthly_access":
+            user_id = int(metadata.get("user_id", 0))
+            result = await db.execute(select(User).where(User.id == user_id))
+            user = result.scalar_one_or_none()
+            if user:
+                now = datetime.utcnow()
+                base = user.subscription_ends_at if user.subscription_ends_at and user.subscription_ends_at > now else now
+                user.subscription_ends_at = base + timedelta(days=settings.MONTHLY_ACCESS_DURATION_DAYS)
+                await db.commit()
+        else:
+            tax_return_id = int(metadata.get("tax_return_id", 0))
+            result = await db.execute(
+                select(TaxReturn).where(TaxReturn.id == tax_return_id)
+            )
+            tax_return = result.scalar_one_or_none()
+            
+            if tax_return:
+                tax_return.status = TaxReturnStatus.PAID
+                await db.commit()
     
     return {"status": "success"}
 
@@ -360,7 +441,7 @@ async def download_pdf(
             detail="Declaración no encontrada"
         )
     
-    if tax_return.status != TaxReturnStatus.PAID:
+    if tax_return.status != TaxReturnStatus.PAID and not user_has_access(current_user):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Es necesario pagar para descargar el documento"

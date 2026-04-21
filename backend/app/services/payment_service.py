@@ -54,3 +54,45 @@ def construct_webhook_event(payload: bytes, sig_header: str) -> stripe.Event:
         sig_header,
         settings.STRIPE_WEBHOOK_SECRET
     )
+
+
+def create_monthly_access_checkout_session(
+    user_id: int,
+    nie: str,
+    amount_cents: Optional[int] = None,
+    currency: str = "eur",
+    success_url: Optional[str] = None,
+    cancel_url: Optional[str] = None,
+) -> stripe.checkout.Session:
+    if amount_cents is None:
+        amount_cents = settings.MONTHLY_ACCESS_PRICE_CENTS
+
+    if success_url is None:
+        success_url = f"{settings.FRONTEND_URL}/?payment=success"
+    if cancel_url is None:
+        cancel_url = f"{settings.FRONTEND_URL}/?payment=cancel"
+
+    session = stripe.checkout.Session.create(
+        payment_method_types=["card"],
+        line_items=[{
+            "price_data": {
+                "currency": currency,
+                "product_data": {
+                    "name": "Accès Déclaration Annuelle (1 mois)",
+                    "description": "Accès pour 1 mois, valable pour 1 seul NIE/DNI",
+                },
+                "unit_amount": int(amount_cents),
+            },
+            "quantity": 1,
+        }],
+        mode="payment",
+        success_url=success_url,
+        cancel_url=cancel_url,
+        metadata={
+            "kind": "monthly_access",
+            "user_id": str(user_id),
+            "nie": str(nie),
+        },
+    )
+
+    return session

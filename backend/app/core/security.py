@@ -4,6 +4,7 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import re
 
 from app.core.config import settings
 from app.db.database import get_db
@@ -61,3 +62,38 @@ async def get_current_user(
 
 async def get_current_active_user(current_user: User = Depends(get_current_user)) -> User:
     return current_user
+
+
+def normalize_nie_dni(value: str) -> str:
+    return re.sub(r"\s+", "", value or "").upper()
+
+
+def is_valid_spanish_nie_dni(value: str) -> bool:
+    value = normalize_nie_dni(value)
+    dni_letters = "TRWAGMYFPDXBNJZSQVHLCKE"
+
+    m_dni = re.fullmatch(r"(\d{8})([A-Z])", value)
+    if m_dni:
+        number = int(m_dni.group(1))
+        letter = m_dni.group(2)
+        return dni_letters[number % 23] == letter
+
+    m_nie = re.fullmatch(r"([XYZ])(\d{7})([A-Z])", value)
+    if m_nie:
+        prefix = m_nie.group(1)
+        number_part = m_nie.group(2)
+        letter = m_nie.group(3)
+        prefix_digit = {"X": "0", "Y": "1", "Z": "2"}[prefix]
+        number = int(prefix_digit + number_part)
+        return dni_letters[number % 23] == letter
+
+    return False
+
+
+def user_has_access(user: User, now: Optional[datetime] = None) -> bool:
+    now = now or datetime.utcnow()
+    if user.subscription_ends_at and user.subscription_ends_at > now:
+        return True
+    if user.trial_ends_at and user.trial_ends_at > now:
+        return True
+    return False

@@ -15,15 +15,50 @@
     
     <main>
       <section class="auth" v-if="!isAuthenticated">
-        <h2>Connexion</h2>
-        <form @submit.prevent="login">
+        <h2 v-if="authMode === 'login'">Connexion</h2>
+        <h2 v-else>Créer un compte</h2>
+
+        <div class="auth-switch">
+          <button type="button" :class="{ active: authMode === 'login' }" @click="authMode = 'login'">Se connecter</button>
+          <button type="button" :class="{ active: authMode === 'register' }" @click="authMode = 'register'">S'inscrire</button>
+        </div>
+
+        <form v-if="authMode === 'login'" @submit.prevent="login">
           <input type="email" v-model="email" placeholder="Email" required>
           <input type="password" v-model="password" placeholder="Mot de passe" required>
           <button type="submit">Se connecter</button>
         </form>
+
+        <form v-else @submit.prevent="register">
+          <input type="text" v-model="registerFullName" placeholder="Nom complet (optionnel)">
+          <input type="text" v-model="registerNie" placeholder="NIE/DNI (obligatoire)" required>
+          <input type="email" v-model="email" placeholder="Email" required>
+          <input type="password" v-model="password" placeholder="Mot de passe (8+ caractères)" required>
+          <button type="submit">Commencer</button>
+        </form>
+
+        <div class="offer-card">
+          <h3>Déclaration annuelle</h3>
+          <p>Essai gratuit au début. Correction gratuite. Ensuite 10€ pour 1 mois d'utilisation (1 seul NIE/DNI).</p>
+          <button type="button" @click="authMode = 'register'">Essayer maintenant</button>
+        </div>
       </section>
       
       <section class="dashboard" v-else>
+        <div class="topbar">
+          <div class="me">
+            <span class="me-email">{{ me?.email }}</span>
+            <span class="me-nie" v-if="me?.nie">NIE/DNI: {{ me.nie }}</span>
+          </div>
+          <button class="logout" @click="logout">Déconnexion</button>
+        </div>
+
+        <div class="access-banner" v-if="me && !me.has_access">
+          <p>Accès limité : démarrez l’essai gratuit ou activez l’accès 10€ / 1 mois (1 seul NIE/DNI).</p>
+          <button v-if="!me.trial_started_at" @click="openOfferModal">Commencer l’essai</button>
+          <button v-else @click="openOfferModal">Activer l’accès</button>
+        </div>
+
         <div class="stats">
           <div class="card">
             <h3>Déclarations</h3>
@@ -68,6 +103,21 @@
         </section>
       </section>
     </main>
+
+    <div class="modal-backdrop" v-if="isAuthenticated && showOfferModal">
+      <div class="modal">
+        <h2>Déclaration annuelle</h2>
+        <p v-if="me && !me.trial_started_at">Accédez au début pour essai. Correction gratuite. Puis 10€ pour 1 mois d'utilisation (valable pour un seul NIE/DNI).</p>
+        <p v-else-if="me && me.has_access">Accès actif.</p>
+        <p v-else>Votre essai est terminé ou non disponible. Activez l’accès 10€ / 1 mois (1 seul NIE/DNI).</p>
+
+        <div class="modal-actions">
+          <button v-if="me && !me.trial_started_at" @click="startTrial">Commencer l’essai gratuit</button>
+          <button v-else-if="me && !me.has_access" @click="startMonthlyAccess">Payer 10€ / 1 mois</button>
+          <button class="secondary" type="button" @click="showOfferModal = false">Fermer</button>
+        </div>
+      </div>
+    </div>
   </div>
   
   <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>

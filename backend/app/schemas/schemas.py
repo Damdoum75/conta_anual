@@ -1,7 +1,8 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, field_validator
 from typing import Optional, List, Dict, Any
 from datetime import datetime
 from enum import Enum
+import json
 
 
 class TaxReturnStatusEnum(str, Enum):
@@ -30,6 +31,10 @@ class UserResponse(BaseModel):
     nie: Optional[str]
     is_admin: bool
     created_at: datetime
+    trial_started_at: Optional[datetime] = None
+    trial_ends_at: Optional[datetime] = None
+    subscription_ends_at: Optional[datetime] = None
+    has_access: bool = False
 
     class Config:
         from_attributes = True
@@ -65,6 +70,20 @@ class TaxReturnResponse(BaseModel):
     calculation_result: Optional[Dict[str, Any]]
     created_at: datetime
     updated_at: datetime
+
+    @field_validator("calculation_result", mode="before")
+    @classmethod
+    def parse_calculation_result(cls, v):
+        if v is None:
+            return None
+        if isinstance(v, (dict, list)):
+            return v
+        if isinstance(v, str) and v.strip():
+            try:
+                return json.loads(v)
+            except Exception:
+                return None
+        return None
 
     class Config:
         from_attributes = True
