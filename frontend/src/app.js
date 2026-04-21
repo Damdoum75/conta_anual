@@ -1,4 +1,20 @@
-const API_URL = (typeof window !== 'undefined' && window.API_URL !== undefined) ? window.API_URL : 'http://localhost:8000';
+const ENV_API_URL = (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.VITE_API_URL)
+  ? import.meta.env.VITE_API_URL
+  : undefined;
+
+const API_URL = String(
+  ENV_API_URL ||
+  (typeof window !== 'undefined' ? window.API_URL : '') ||
+  ''
+).replace(/\/$/, '');
+
+function requireApiUrl() {
+  if (!API_URL) {
+    alert("Configuration manquante: définis VITE_API_URL (URL du backend Railway) dans Vercel.");
+    throw new Error('Missing API URL');
+  }
+  return API_URL;
+}
 
 const app = {
   data() {
@@ -33,7 +49,7 @@ const app = {
 
     async register() {
       try {
-        const response = await fetch(`${API_URL}/api/auth/register`, {
+        const response = await fetch(`${requireApiUrl()}/api/auth/register`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -64,7 +80,7 @@ const app = {
 
     async login() {
       try {
-        const response = await fetch(`${API_URL}/api/auth/login`, {
+        const response = await fetch(`${requireApiUrl()}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email: this.email, password: this.password })
@@ -107,7 +123,7 @@ const app = {
     },
 
     async fetchMe() {
-      const response = await fetch(`${API_URL}/api/users/me`, {
+      const response = await fetch(`${requireApiUrl()}/api/users/me`, {
         headers: { ...this.authHeaders() }
       });
       if (response.ok) {
@@ -117,7 +133,7 @@ const app = {
 
     async startTrial() {
       try {
-        const response = await fetch(`${API_URL}/api/billing/trial/start`, {
+        const response = await fetch(`${requireApiUrl()}/api/billing/trial/start`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', ...this.authHeaders() },
         });
@@ -136,7 +152,7 @@ const app = {
 
     async startMonthlyAccess() {
       try {
-        const response = await fetch(`${API_URL}/api/billing/monthly/checkout`, {
+        const response = await fetch(`${requireApiUrl()}/api/billing/monthly/checkout`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', ...this.authHeaders() },
         });
@@ -159,7 +175,7 @@ const app = {
 
     async fetchDeclarations() {
       try {
-        const response = await fetch(`${API_URL}/api/tax-returns/`, {
+        const response = await fetch(`${requireApiUrl()}/api/tax-returns/`, {
           headers: { ...this.authHeaders() }
         });
 
