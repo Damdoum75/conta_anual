@@ -15,8 +15,8 @@ class Settings(BaseSettings):
     STRIPE_WEBHOOK_SECRET: str = "whsec_your_webhook_secret"
     STRIPE_PRICE_ID: str = "price_your_price_id"
     
-    FRONTEND_URL: str = "http://localhost:5173"
-    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000,https://tecteamlab.eu,https://www.tecteamlab.eu,https://tectemalab.eu,https://www.tectemalab.eu"
+    FRONTEND_URL: str = "https://conta-anual-xygs.vercel.app"
+    CORS_ORIGINS: str = "http://localhost:5173,http://localhost:3000,https://conta-anual-xygs.vercel.app,https://tecteamlab.eu,https://www.tecteamlab.eu,https://tectemalab.eu,https://www.tectemalab.eu"
     CORS_ORIGIN_REGEX: str = r"https://.*\.vercel\.app"
     TRIAL_DAYS: int = 7
     MONTHLY_ACCESS_PRICE_CENTS: int = 1000

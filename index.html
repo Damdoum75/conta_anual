@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TecTeamLab - Tech Solutions & Innovation</title>
+    <link rel="icon" type="image/svg+xml" href="logo-icon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Roboto:wght@300;400&family=Tajawal:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .irpf-service-cta-wrap {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            margin: 26px 0 18px;
+        }
+
+        .irpf-cta-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: min(980px, 100%);
+            min-height: 130px;
+            padding: 28px 34px;
+            border-radius: 18px;
+            font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            font-weight: 900;
+            font-size: clamp(18px, 2.1vw, 30px);
+            letter-spacing: .2px;
+            text-decoration: none;
+            text-align: center;
+            color: #061016;
+            background: linear-gradient(115deg, #1e90ff 0%, #00ffd5 45%, #39ff14 100%);
+            border: 2px solid rgba(255, 255, 255, .22);
+            box-shadow:
+                0 0 0 2px rgba(57, 255, 20, .18),
+                0 0 22px rgba(57, 255, 20, .38),
+                0 0 46px rgba(30, 144, 255, .32),
+                0 18px 55px rgba(0, 0, 0, .42);
+            transform: translateZ(0);
+            animation: irpfPulse 2.7s ease-in-out infinite;
+        }
+
+        .irpf-cta-btn:hover {
+            filter: brightness(1.02);
+            box-shadow:
+                0 0 0 2px rgba(57, 255, 20, .26),
+                0 0 28px rgba(57, 255, 20, .48),
+                0 0 60px rgba(30, 144, 255, .40),
+                0 22px 70px rgba(0, 0, 0, .48);
+        }
+
+        .irpf-cta-btn:active {
+            transform: scale(.99);
+        }
+
+        @keyframes irpfPulse {
+            0%, 100% {
+                transform: scale(1);
+                filter: saturate(1);
+            }
+            50% {
+                transform: scale(1.016);
+                filter: saturate(1.10);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .irpf-cta-btn {
+                animation: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <img src="logo.svg" alt="TecTeamLab" class="logo">
+            <nav class="nav">
+                <a href="#services" data-i18n="nav_services">Services</a>
+                <a href="#portfolio" data-i18n="nav_portfolio">Portfolio</a>
+                <a href="#contact" class="cta-btn" data-i18n="nav_contact">Contact</a>
+            </nav>
+            <div class="lang-switcher">
+                <button class="lang-btn active" data-lang="en">EN</button>
+                <button class="lang-btn" data-lang="fr">FR</button>
+                <button class="lang-btn" data-lang="es">ES</button>
+                <button class="lang-btn" data-lang="ar">AR</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- BANNIÈRE OFFRE SPÉCIALE -->
+    <div class="promo-banner">
+        <div class="container">
+            <div class="promo-content">
+                <div class="promo-icon">⚡</div>
+                <div class="promo-text">
+                    <h3 class="promo-title" data-i18n="promo_title">Website Creation from 169€ (domain and hosting included)</h3>
+                    <p class="promo-subtitle" data-i18n="promo_subtitle">And only 4.8€/month to manage from year 2 • No commitment • Cancel anytime</p>
+                </div>
+                <a href="pack-cafe.html" class="promo-btn" data-i18n="promo_btn">Discover the offer</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title" data-i18n="hero_title">Tech Solutions for Tomorrow</h1>
+            <p class="hero-subtitle" data-i18n="hero_subtitle">AI Development, Web Apps & Cloud Migration</p>
+            <a href="#contact" class="hero-cta" data-i18n="hero_cta">Get Started</a>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section id="services" class="services">
+        <div class="container">
+            <h2 class="section-title" data-i18n="services_title">Our Services</h2>
+            <div class="irpf-service-cta-wrap">
+                <a
+                    class="irpf-cta-btn"
+                    href="https://conta-anual-xygs.vercel.app/?utm_source=tecteamlab.eu&utm_medium=services&utm_campaign=irpf_2025"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    Declaración Anual Personas Físicas 2025
+                </a>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-icon">🚀</div>
+                    <h3 data-i18n="service1_title">Web Development</h3>
+                    <p data-i18n="service1_desc">Modern websites and web applications with cutting-edge technologies</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">⚙️</div>
+                    <h3 data-i18n="service2_title">Data Processing</h3>
+                    <p data-i18n="service2_desc">Scraping, ETL pipelines, and intelligent automation</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🔌</div>
+                    <h3 data-i18n="service3_title">Testing & QA</h3>
+                    <p data-i18n="service3_desc">Automated testing, CI/CD integration, quality assurance</p>
+                </div>
+                <div class="service-card">
+                    <div class="service-icon">🛡️</div>
+                    <h3 data-i18n="service4_title">GDPR Consulting</h3>
+                    <p data-i18n="service4_desc">Data compliance and privacy regulation expertise</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Portfolio -->
+    <section id="portfolio" class="portfolio">
+        <div class="container">
+            <h2 class="section-title" data-i18n="portfolio_title">Recent Projects</h2>
+            <div class="portfolio-grid">
+                <div class="portfolio-item">
+                    <h3 data-i18n="project1_title">Azure Migration Tool</h3>
+                    <p data-i18n="project1_desc">Automated Blob Storage to SharePoint migration system</p>
+                    <div class="tech-tags">
+                        <span>Python</span>
+                        <span>Azure SDK</span>
+                        <span>SharePoint API</span>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <h3 data-i18n="project2_title">Automated CRM</h3>
+                    <p data-i18n="project2_desc">SQLite-based client and deal tracking system</p>
+                    <div class="tech-tags">
+                        <span>SQLite</span>
+                        <span>Python</span>
+                        <span>Email Integration</span>
+                    </div>
+                </div>
+                <div class="portfolio-item">
+                    <h3 data-i18n="project3_title">Data Extraction</h3>
+                    <p data-i18n="project3_desc">Telegram quiz data extraction to Excel automation</p>
+                    <div class="tech-tags">
+                        <span>Telegram API</span>
+                        <span>Pandas</span>
+                        <span>REST APIs</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="contact">
+        <div class="container">
+            <h2 class="section-title" data-i18n="contact_title">Get in Touch</h2>
+            <div class="contact-info">
+                <p><strong data-i18n="contact_email">Email:</strong> <a href="mailto:contact@tecteamlab.eu">contact@tecteamlab.eu</a></p>
+                <p><strong data-i18n="contact_phone">Phone:</strong> <a href="tel:+34614211644">+34 614 211 644</a></p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p data-i18n="footer_text">&copy; 2026 TecTeamLab - Tech Solutions & Innovation</p>
+        </div>
+    </footer>
+
+    <script src="translations.js"></script>
+</body>
+</html>
