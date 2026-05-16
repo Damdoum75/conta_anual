@@ -10,6 +10,7 @@ const translations = {
     hero_subtitle: "AI Development, Web Apps & Cloud Migration",
     hero_cta: "Get Started",
     services_title: "Our Services",
+    irpf_cta_text: "Annual Tax Return Individuals 2025 (Spain)",
     service1_title: "Web Development",
     service1_desc: "Modern websites and web applications with cutting-edge technologies",
     service2_title: "Data Processing",
@@ -53,6 +54,7 @@ const translations = {
     hero_subtitle: "Développement IA, applications web & migration cloud",
     hero_cta: "Démarrer",
     services_title: "Nos Services",
+    irpf_cta_text: "Déclaration Annuelle Personnes Physiques 2025 (Espagne)",
     service1_title: "Développement Web",
     service1_desc: "Sites modernes et applications web avec des technologies de pointe",
     service2_title: "Traitement de Données",
@@ -96,6 +98,7 @@ const translations = {
     hero_subtitle: "Desarrollo IA, apps web y migración cloud",
     hero_cta: "Empezar",
     services_title: "Nuestros Servicios",
+    irpf_cta_text: "Declaración Anual Personas Físicas 2025",
     service1_title: "Desarrollo Web",
     service1_desc: "Sitios modernos y aplicaciones web con tecnologías de última generación",
     service2_title: "Procesamiento de Datos",
@@ -139,6 +142,7 @@ const translations = {
     hero_subtitle: "تطوير الذكاء الاصطناعي، تطبيقات الويب، وترحيل السحابة",
     hero_cta: "ابدأ الآن",
     services_title: "خدماتنا",
+    irpf_cta_text: "الإقرار الضريبي السنوي للأفراد 2025 (إسبانيا)",
     service1_title: "تطوير الويب",
     service1_desc: "مواقع وتطبيقات ويب حديثة بتقنيات متقدمة",
     service2_title: "معالجة البيانات",
@@ -216,4 +220,3 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 });
-
