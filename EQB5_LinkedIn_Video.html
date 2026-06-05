@@ -1,0 +1,1201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Industrie 5.0 — Code Chiller · LinkedIn Animation</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;500;700;900&family=Barlow:wght@300;400;500&display=swap');
+
+:root {
+  --bg: #050a0f;
+  --surface: #0d1520;
+  --surface2: #111d2e;
+  --border: #1e3048;
+  --text: #c8dff5;
+  --muted: #4a6a8a;
+  --green: #00ff88;
+  --green-glow: rgba(0,255,136,0.15);
+  --orange: #ff9500;
+  --orange-glow: rgba(255,149,0,0.15);
+  --red: #ff3b55;
+  --red-glow: rgba(255,59,85,0.15);
+  --blue: #00b4ff;
+  --blue-glow: rgba(0,180,255,0.12);
+  --teal: #00d4c8;
+  --amber: #ffd060;
+  --mono: 'Share Tech Mono', monospace;
+  --display: 'Barlow Condensed', sans-serif;
+  --body: 'Barlow', sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--bg);
+  font-family: var(--body);
+  overflow: hidden;
+  width: 1080px;
+  height: 1080px;
+  position: relative;
+}
+
+/* ── SCAN LINES overlay ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px);
+  pointer-events: none; z-index: 1000;
+}
+
+/* ── VIGNETTE ── */
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.7) 100%);
+  pointer-events: none; z-index: 999;
+}
+
+/* ══════════════════════════════════════
+   SCENE CONTAINER
+══════════════════════════════════════ */
+#scene {
+  width: 1080px;
+  height: 1080px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── ANIMATED GRID BACKGROUND ── */
+.grid-bg {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(0,180,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,180,255,0.04) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridPulse 8s ease-in-out infinite;
+}
+@keyframes gridPulse {
+  0%,100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* ── CIRCUIT LINES ── */
+.circuit-lines {
+  position: absolute; inset: 0;
+  overflow: hidden;
+  opacity: 0.15;
+}
+.circuit-line {
+  position: absolute;
+  background: var(--blue);
+  box-shadow: 0 0 8px var(--blue);
+}
+
+/* ══════════════════════════════════════
+   PHASE PANELS
+══════════════════════════════════════ */
+.phase {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  opacity: 0;
+  transition: none;
+}
+
+/* ══════════════════════════════════════
+   TOP BAR
+══════════════════════════════════════ */
+.top-bar {
+  display: flex; align-items: center; gap: 16px;
+  padding: 18px 32px;
+  background: rgba(13,21,32,0.95);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+  z-index: 10;
+}
+.logo {
+  font-family: var(--display);
+  font-weight: 900; font-size: 22px; letter-spacing: 3px;
+  color: var(--teal);
+  text-transform: uppercase;
+}
+.logo span { color: rgba(0,212,200,0.4); }
+.top-title { font-family: var(--display); font-size: 16px; font-weight: 500; color: var(--text); letter-spacing: 1px; }
+.top-sub { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+.top-right { margin-left: auto; display: flex; align-items: center; gap: 16px; }
+.status-badge {
+  padding: 5px 14px; border-radius: 20px;
+  font-family: var(--display); font-size: 13px; font-weight: 700; letter-spacing: 1px;
+  border: 1px solid;
+  animation: badgePulse 2s ease-in-out infinite;
+}
+.badge-ok { background: var(--green-glow); color: var(--green); border-color: rgba(0,255,136,0.3); }
+.badge-warn { background: var(--orange-glow); color: var(--orange); border-color: rgba(255,149,0,0.3); }
+.badge-action { background: var(--blue-glow); color: var(--blue); border-color: rgba(0,180,255,0.3); }
+@keyframes badgePulse {
+  0%,100% { box-shadow: 0 0 0 0 transparent; }
+  50% { box-shadow: 0 0 12px 2px currentColor; opacity: 0.9; }
+}
+.clock {
+  font-family: var(--mono); font-size: 18px; color: var(--amber);
+  text-shadow: 0 0 20px rgba(255,208,96,0.4);
+}
+
+/* ══════════════════════════════════════
+   MAIN CONTENT AREA
+══════════════════════════════════════ */
+.content {
+  flex: 1; display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 12px; padding: 20px 28px;
+  position: relative; z-index: 5;
+}
+
+/* ── CARD ── */
+.card {
+  background: rgba(13,21,32,0.9);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  position: relative;
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+}
+.card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, var(--blue), transparent);
+  opacity: 0.4;
+}
+.card-label {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 2px;
+  color: var(--muted); text-transform: uppercase; margin-bottom: 12px;
+}
+
+/* ══════════════════════════════════════
+   CHILLER DIAGRAM
+══════════════════════════════════════ */
+.chiller-diagram {
+  position: relative;
+  height: 200px;
+  display: flex; align-items: center; justify-content: center;
+}
+.chiller-unit {
+  width: 120px; height: 80px;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 4px;
+  position: relative;
+  z-index: 5;
+}
+.chiller-icon { font-size: 28px; line-height: 1; }
+.chiller-label { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+.chiller-temp { font-family: var(--mono); font-size: 14px; font-weight: 700; }
+
+/* Pipes */
+.pipe-container {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+.pipe {
+  position: absolute;
+  border-radius: 4px;
+}
+.pipe-h { height: 8px; }
+.pipe-v { width: 8px; }
+
+/* Flow animation */
+.flow-particle {
+  position: absolute;
+  width: 12px; height: 6px;
+  border-radius: 3px;
+  animation: flowAnim linear infinite;
+}
+@keyframes flowAnim {
+  0% { opacity: 0; transform: translateX(-10px); }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { opacity: 0; transform: translateX(var(--flow-dist, 200px)); }
+}
+
+/* ══════════════════════════════════════
+   METRICS DISPLAY
+══════════════════════════════════════ */
+.metrics-grid {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: 10px;
+}
+.metric {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 12px 10px;
+  text-align: center; position: relative; overflow: hidden;
+}
+.metric-glow {
+  position: absolute; inset: 0; border-radius: 8px;
+  opacity: 0; transition: opacity 0.5s;
+}
+.metric.alert .metric-glow { opacity: 1; }
+.metric-val {
+  font-family: var(--mono); font-size: 26px; font-weight: 700;
+  line-height: 1; transition: color 0.5s;
+}
+.metric-unit { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.metric-label { font-size: 10px; color: var(--muted); margin-top: 4px; }
+.metric-delta {
+  font-family: var(--mono); font-size: 10px; margin-top: 3px;
+  opacity: 0; transition: opacity 0.5s;
+}
+.metric.alert .metric-delta { opacity: 1; }
+
+/* ══════════════════════════════════════
+   GRAPH CARD (full width)
+══════════════════════════════════════ */
+.graph-card {
+  grid-column: 1 / -1;
+  height: 180px;
+  padding: 16px 20px 12px;
+}
+.graph-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.graph-title { font-family: var(--display); font-size: 15px; font-weight: 700; color: var(--text); letter-spacing: 1px; }
+.graph-legend { display: flex; gap: 16px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--muted); }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+.graph-area {
+  height: 100px; position: relative;
+  border-bottom: 1px solid var(--border);
+  border-left: 1px solid var(--border);
+}
+.graph-svg { width: 100%; height: 100%; overflow: visible; }
+
+/* ══════════════════════════════════════
+   VALVE STATUS ROW
+══════════════════════════════════════ */
+.valve-row {
+  display: flex; gap: 10px; align-items: center;
+}
+.valve-item {
+  flex: 1; background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px; padding: 10px 8px;
+  text-align: center;
+  transition: all 0.4s;
+}
+.valve-item.active {
+  border-color: var(--teal);
+  box-shadow: 0 0 16px rgba(0,212,200,0.2);
+  background: rgba(0,212,200,0.05);
+}
+.valve-item.fault {
+  border-color: var(--orange);
+  box-shadow: 0 0 16px rgba(255,149,0,0.2);
+  background: var(--orange-glow);
+  animation: faultBlink 1s ease-in-out infinite;
+}
+@keyframes faultBlink {
+  0%,100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+.valve-icon { font-size: 22px; }
+.valve-label { font-family: var(--mono); font-size: 9px; color: var(--muted); margin-top: 2px; }
+.valve-state { font-family: var(--display); font-size: 11px; font-weight: 700; margin-top: 4px; letter-spacing: 1px; }
+
+/* ══════════════════════════════════════
+   ALERT PANEL
+══════════════════════════════════════ */
+.alert-panel {
+  grid-column: 1 / -1;
+  border-radius: 10px; padding: 20px 24px;
+  display: flex; gap: 20px; align-items: flex-start;
+  opacity: 0; transform: translateY(20px);
+  transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.alert-panel.visible { opacity: 1; transform: translateY(0); }
+.alert-panel.warn {
+  background: linear-gradient(135deg, rgba(255,149,0,0.08), rgba(255,149,0,0.03));
+  border: 1px solid rgba(255,149,0,0.4);
+  box-shadow: 0 0 40px rgba(255,149,0,0.08);
+}
+.alert-panel.success {
+  background: linear-gradient(135deg, rgba(0,180,255,0.08), rgba(0,255,136,0.03));
+  border: 1px solid rgba(0,180,255,0.4);
+  box-shadow: 0 0 40px rgba(0,180,255,0.1);
+}
+.alert-icon { font-size: 32px; line-height: 1; margin-top: 2px; }
+.alert-content { flex: 1; }
+.alert-title {
+  font-family: var(--display); font-size: 20px; font-weight: 900;
+  letter-spacing: 1px; margin-bottom: 6px;
+}
+.alert-msg { font-size: 13px; color: var(--text); line-height: 1.5; }
+.alert-stats {
+  display: flex; gap: 24px; margin-top: 12px;
+}
+.alert-stat { }
+.stat-val { font-family: var(--mono); font-size: 22px; font-weight: 700; }
+.stat-label { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* ══════════════════════════════════════
+   BOTTOM BAR
+══════════════════════════════════════ */
+.bottom-bar {
+  padding: 14px 28px;
+  background: rgba(5,10,15,0.95);
+  border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 20px;
+  position: relative; z-index: 10;
+}
+.progress-track {
+  flex: 1; height: 4px;
+  background: var(--surface2); border-radius: 2px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%; border-radius: 2px;
+  background: linear-gradient(90deg, var(--blue), var(--teal));
+  box-shadow: 0 0 10px var(--teal);
+  width: 0%;
+  transition: width 0.3s linear;
+}
+.phase-label {
+  font-family: var(--display); font-size: 13px; font-weight: 700;
+  color: var(--muted); letter-spacing: 1px; white-space: nowrap;
+}
+.phase-dots { display: flex; gap: 8px; }
+.phase-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--surface2); border: 1px solid var(--border);
+  transition: all 0.4s;
+}
+.phase-dot.done { background: var(--green); border-color: var(--green); box-shadow: 0 0 8px var(--green); }
+.phase-dot.active { background: var(--blue); border-color: var(--blue); box-shadow: 0 0 8px var(--blue); animation: dotPulse 1s ease-in-out infinite; }
+@keyframes dotPulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.4)} }
+
+/* ══════════════════════════════════════
+   PHASE 1 — PRODUCTION NORMALE
+══════════════════════════════════════ */
+#phase1 {
+  background: radial-gradient(ellipse at 30% 40%, rgba(0,180,255,0.06) 0%, transparent 60%);
+}
+
+/* ══════════════════════════════════════
+   PHASE 2 — DÉTECTION ENCRASSEMENT
+══════════════════════════════════════ */
+#phase2 {
+  background: radial-gradient(ellipse at 70% 40%, rgba(255,149,0,0.07) 0%, transparent 60%);
+}
+
+/* ══════════════════════════════════════
+   PHASE 3 — ACTION AUTOMATIQUE
+══════════════════════════════════════ */
+#phase3 {
+  background: radial-gradient(ellipse at 50% 30%, rgba(0,255,136,0.06) 0%, transparent 60%);
+}
+
+/* ══════════════════════════════════════
+   PHASE TITLE OVERLAY
+══════════════════════════════════════ */
+.phase-title-overlay {
+  position: absolute;
+  top: 80px; left: 0; right: 0;
+  text-align: center;
+  z-index: 50;
+  opacity: 0;
+  transform: translateY(-30px);
+  transition: all 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  pointer-events: none;
+}
+.phase-title-overlay.visible {
+  opacity: 1; transform: translateY(0);
+}
+.phase-number {
+  font-family: var(--mono); font-size: 11px; letter-spacing: 4px;
+  color: var(--muted); margin-bottom: 4px;
+}
+.phase-name {
+  font-family: var(--display); font-size: 52px; font-weight: 900;
+  letter-spacing: 3px; text-transform: uppercase; line-height: 1;
+}
+
+/* ══════════════════════════════════════
+   CLEANING ANIMATION
+══════════════════════════════════════ */
+.cleaning-beam {
+  position: absolute;
+  height: 100%; width: 3px;
+  background: linear-gradient(180deg, transparent, var(--teal), transparent);
+  box-shadow: 0 0 20px var(--teal), 0 0 40px rgba(0,212,200,0.4);
+  left: -3px;
+  animation: cleaningBeam 2s linear infinite;
+}
+@keyframes cleaningBeam {
+  0% { left: 0%; opacity: 0; }
+  5% { opacity: 1; }
+  95% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+/* ══════════════════════════════════════
+   WATERMARK / BRANDING
+══════════════════════════════════════ */
+.watermark {
+  position: absolute;
+  bottom: 70px; right: 28px;
+  text-align: right;
+  z-index: 20;
+  opacity: 0.5;
+}
+.watermark-brand { font-family: var(--display); font-size: 14px; font-weight: 900; letter-spacing: 2px; color: var(--teal); }
+.watermark-sub { font-family: var(--mono); font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* ══════════════════════════════════════
+   TYPEWRITER
+══════════════════════════════════════ */
+.typewriter { overflow: hidden; white-space: nowrap; border-right: 2px solid var(--teal); width: 0; }
+.typewriter.typing { animation: typeAnim var(--tw-duration, 2s) steps(var(--tw-steps, 40)) forwards, blinkCursor 0.7s step-end infinite; }
+@keyframes typeAnim { to { width: 100%; } }
+@keyframes blinkCursor { 50% { border-color: transparent; } }
+
+/* ══════════════════════════════════════
+   ENERGY BAR
+══════════════════════════════════════ */
+.energy-bar-container { margin-top: 8px; }
+.energy-bar-label { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.energy-bar-track { height: 10px; background: var(--surface2); border-radius: 5px; overflow: hidden; }
+.energy-bar-fill { height: 100%; border-radius: 5px; transition: width 2s ease, background 1s; }
+
+/* ══════════════════════════════════════
+   SCAN LINE EFFECT ON METRICS
+══════════════════════════════════════ */
+.scan-effect {
+  position: absolute; left: 0; right: 0; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0,180,255,0.8), transparent);
+  animation: scanLine 3s linear infinite;
+  pointer-events: none;
+}
+@keyframes scanLine {
+  0% { top: 0%; opacity: 0; }
+  5% { opacity: 1; }
+  95% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+/* ── COUNTER ANIMATION ── */
+.count-up { display: inline-block; }
+
+/* ── FADE IN ITEMS ── */
+.fade-item { opacity: 0; transform: translateY(15px); transition: all 0.5s; }
+.fade-item.visible { opacity: 1; transform: translateY(0); }
+
+</style>
+</head>
+<body>
+<div id="scene">
+  <div class="grid-bg"></div>
+
+  <!-- ══════════════════════════════════════
+       PHASE 1 — PRODUCTION NORMALE
+  ══════════════════════════════════════ -->
+  <div class="phase" id="phase1">
+
+    <div class="top-bar">
+      <div>
+        <div class="logo">INDUSTRIE<span> 5.0</span></div>
+      </div>
+      <div style="margin-left:12px">
+        <div class="top-title">Industrie 5.0 · Code Chiller · Système de surveillance</div>
+        <div class="top-sub">Code Chiller · Automatisation Intelligente</div>
+      </div>
+      <div class="top-right">
+        <span class="status-badge badge-ok" id="badge1">⬤ PRODUCTION OPTIMALE</span>
+        <div class="clock" id="clock1">14:32:05</div>
+      </div>
+    </div>
+
+    <div class="phase-title-overlay" id="ptitle1">
+      <div class="phase-number">PHASE 01 / 03</div>
+      <div class="phase-name" style="color:var(--blue)">PRODUCTIVITÉ</div>
+    </div>
+
+    <div class="content" style="grid-template-rows: auto auto auto;">
+
+      <!-- Métriques Chiller -->
+      <div class="card">
+        <div class="card-label">⬡ Chiller · Paramètres temps réel</div>
+        <div class="scan-effect"></div>
+        <div class="metrics-grid">
+          <div class="metric" id="m1-temp">
+            <div class="metric-glow" style="background:var(--green-glow)"></div>
+            <div class="metric-val" style="color:var(--green)" id="v-temp">7.2</div>
+            <div class="metric-unit">°C</div>
+            <div class="metric-label">Temp. sortie</div>
+            <div class="metric-delta" style="color:var(--green)">▼ nominal</div>
+          </div>
+          <div class="metric" id="m1-press">
+            <div class="metric-glow" style="background:var(--green-glow)"></div>
+            <div class="metric-val" style="color:var(--green)" id="v-press">2.4</div>
+            <div class="metric-unit">bar</div>
+            <div class="metric-label">Δ Pression</div>
+            <div class="metric-delta" style="color:var(--green)">▼ nominal</div>
+          </div>
+          <div class="metric" id="m1-load">
+            <div class="metric-glow" style="background:var(--blue-glow)"></div>
+            <div class="metric-val" style="color:var(--blue)" id="v-load">47</div>
+            <div class="metric-unit">%</div>
+            <div class="metric-label">Charge chiller</div>
+            <div class="metric-delta" style="color:var(--blue)">▸ optimal</div>
+          </div>
+          <div class="metric" id="m1-coeff">
+            <div class="metric-glow" style="background:var(--green-glow)"></div>
+            <div class="metric-val" style="color:var(--green)" id="v-coeff">98.5</div>
+            <div class="metric-unit">%</div>
+            <div class="metric-label">Eff. échange</div>
+            <div class="metric-delta" style="color:var(--green)">▲ excellent</div>
+          </div>
+          <div class="metric" id="m1-flow">
+            <div class="metric-glow" style="background:var(--green-glow)"></div>
+            <div class="metric-val" style="color:var(--green)" id="v-flow">18.3</div>
+            <div class="metric-unit">m³/h</div>
+            <div class="metric-label">Débit</div>
+            <div class="metric-delta" style="color:var(--green)">▸ nominal</div>
+          </div>
+          <div class="metric" id="m1-cop">
+            <div class="metric-glow" style="background:var(--green-glow)"></div>
+            <div class="metric-val" style="color:var(--green)" id="v-cop">4.8</div>
+            <div class="metric-unit">COP</div>
+            <div class="metric-label">Coefficient</div>
+            <div class="metric-delta" style="color:var(--green)">▲ élevé</div>
+          </div>
+        </div>
+
+        <!-- Barre énergie -->
+        <div class="energy-bar-container" style="margin-top:14px">
+          <div class="energy-bar-label">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--muted)">CONSOMMATION ÉNERGÉTIQUE</span>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--green)" id="energy-pct1">47%</span>
+          </div>
+          <div class="energy-bar-track">
+            <div class="energy-bar-fill" id="energy-bar1" style="width:47%;background:linear-gradient(90deg,var(--blue),var(--green))"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- État vannes -->
+      <div class="card">
+        <div class="card-label">⬡ Vannes · État du cycle</div>
+        <div class="valve-row">
+          <div class="valve-item active" id="v1">
+            <div class="valve-icon">🔄</div>
+            <div class="valve-label">VANNE 1</div>
+            <div class="valve-state" style="color:var(--teal)">CLEAN</div>
+          </div>
+          <div class="valve-item" id="v2">
+            <div class="valve-icon">🔄</div>
+            <div class="valve-label">VANNE 2</div>
+            <div class="valve-state" style="color:var(--green)">HOME</div>
+          </div>
+          <div class="valve-item" id="v3">
+            <div class="valve-icon">🔄</div>
+            <div class="valve-label">VANNE 3</div>
+            <div class="valve-state" style="color:var(--green)">HOME</div>
+          </div>
+          <div class="valve-item" id="v4">
+            <div class="valve-icon">🔄</div>
+            <div class="valve-label">VANNE 4</div>
+            <div class="valve-state" style="color:var(--green)">HOME</div>
+          </div>
+          <div class="valve-item" id="v5">
+            <div class="valve-icon">🔄</div>
+            <div class="valve-label">VANNE 5</div>
+            <div class="valve-state" style="color:var(--green)">HOME</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;display:flex;gap:10px">
+          <div style="flex:1;background:var(--surface2);border-radius:6px;padding:10px;text-align:center">
+            <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--blue)" id="cycle-count">10 042</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">Cycles total</div>
+          </div>
+          <div style="flex:1;background:var(--surface2);border-radius:6px;padding:10px;text-align:center">
+            <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--green)">9 998</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">Réussis</div>
+          </div>
+          <div style="flex:1;background:var(--surface2);border-radius:6px;padding:10px;text-align:center">
+            <div style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--muted)">0</div>
+            <div style="font-size:10px;color:var(--muted);margin-top:2px">Arrêts urgence</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graphe efficacité thermique -->
+      <div class="card graph-card">
+        <div class="graph-header">
+          <div class="graph-title">Efficacité échange thermique · 72h</div>
+          <div class="graph-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Efficacité (%)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--blue)"></div>Charge (%)</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--orange);opacity:0.5"></div>Seuil alerte</div>
+          </div>
+        </div>
+        <div class="graph-area">
+          <svg class="graph-svg" viewBox="0 0 900 100" preserveAspectRatio="none">
+            <!-- Seuil alerte -->
+            <line x1="0" y1="30" x2="900" y2="30" stroke="rgba(255,149,0,0.3)" stroke-dasharray="6,4" stroke-width="1"/>
+            <!-- Zone verte -->
+            <defs>
+              <linearGradient id="grad-eff" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(0,255,136,0.3)"/>
+                <stop offset="100%" stop-color="rgba(0,255,136,0)"/>
+              </linearGradient>
+              <linearGradient id="grad-load" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(0,180,255,0.2)"/>
+                <stop offset="100%" stop-color="rgba(0,180,255,0)"/>
+              </linearGradient>
+            </defs>
+            <!-- Courbe efficacité (haute = nominal ~95-99%) -->
+            <path id="eff-path" d="M0,5 C50,4 100,6 150,4 C200,3 250,5 300,4 C350,5 400,3 450,5 C500,4 550,6 600,4 C650,3 700,5 750,4 C800,5 850,3 900,4"
+              fill="url(#grad-eff)" stroke="var(--green)" stroke-width="2.5"/>
+            <!-- Courbe charge (milieu ~45-55%) -->
+            <path id="load-path" d="M0,55 C50,52 100,58 150,54 C200,56 250,50 300,53 C350,57 400,51 450,55 C500,53 550,56 600,52 C650,55 700,54 750,56 C800,51 850,54 900,53"
+              fill="url(#grad-load)" stroke="var(--blue)" stroke-width="1.5" opacity="0.7"/>
+            <!-- Marqueur temps réel -->
+            <circle id="rt-dot" cx="900" cy="4" r="4" fill="var(--green)" opacity="0.9">
+              <animate attributeName="r" values="4;6;4" dur="1.5s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values="0.9;0.4;0.9" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="bottom-bar">
+      <div class="phase-dots">
+        <div class="phase-dot active" id="dot1-1"></div>
+        <div class="phase-dot" id="dot1-2"></div>
+        <div class="phase-dot" id="dot1-3"></div>
+      </div>
+      <div class="phase-label" id="phase-label1">PHASE 01 · PRODUCTIVITÉ NOMINALE</div>
+      <div class="progress-track"><div class="progress-fill" id="progress1"></div></div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--muted)">Industrie 5.0 · v1.4.0</div>
+    </div>
+    <div class="watermark"><div class="watermark-brand">INDUSTRIE 5.0</div><div class="watermark-sub">Created by Tecteamlab.eu</div></div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PHASE 2 — DÉTECTION MICRO-DÉRIVE
+  ══════════════════════════════════════ -->
+  <div class="phase" id="phase2">
+
+    <div class="top-bar">
+      <div>
+        <div class="logo">INDUSTRIE<span> 5.0</span></div>
+      </div>
+      <div style="margin-left:12px">
+        <div class="top-title">Industrie 5.0 · Code Chiller · Analyse prédictive</div>
+        <div class="top-sub">Analyse prédictive · D110 = 58% · Actif</div>
+      </div>
+      <div class="top-right">
+        <span class="status-badge badge-warn" id="badge2">⚠ MICRO-DÉRIVE DÉTECTÉE</span>
+        <div class="clock" id="clock2">16:47:22</div>
+      </div>
+    </div>
+
+    <div class="phase-title-overlay" id="ptitle2">
+      <div class="phase-number">PHASE 02 / 03</div>
+      <div class="phase-name" style="color:var(--orange)">DÉTECTION</div>
+    </div>
+
+    <div class="content" style="grid-template-rows: auto auto auto;">
+
+      <!-- Métriques dégradées -->
+      <div class="card">
+        <div class="card-label">⚠ Chiller · Anomalie détectée · Seuil D205 = 60%</div>
+        <div class="scan-effect" style="background:linear-gradient(90deg,transparent,rgba(255,149,0,0.6),transparent)"></div>
+        <div class="metrics-grid">
+          <div class="metric alert" id="m2-temp">
+            <div class="metric-glow" style="background:var(--orange-glow)"></div>
+            <div class="metric-val" style="color:var(--orange)">8.9</div>
+            <div class="metric-unit">°C</div>
+            <div class="metric-label">Temp. sortie</div>
+            <div class="metric-delta" style="color:var(--orange)">▲ +1.7°C</div>
+          </div>
+          <div class="metric alert" id="m2-press">
+            <div class="metric-glow" style="background:var(--orange-glow)"></div>
+            <div class="metric-val" style="color:var(--orange)">2.9</div>
+            <div class="metric-unit">bar</div>
+            <div class="metric-label">Δ Pression</div>
+            <div class="metric-delta" style="color:var(--orange)">▲ +0.5 bar</div>
+          </div>
+          <div class="metric alert" id="m2-load">
+            <div class="metric-glow" style="background:var(--orange-glow)"></div>
+            <div class="metric-val" style="color:var(--orange)">58</div>
+            <div class="metric-unit">%</div>
+            <div class="metric-label">Charge chiller</div>
+            <div class="metric-delta" style="color:var(--orange)">▲ +11%</div>
+          </div>
+          <div class="metric alert" id="m2-coeff">
+            <div class="metric-glow" style="background:var(--orange-glow)"></div>
+            <div class="metric-val" style="color:var(--orange)">91.2</div>
+            <div class="metric-unit">%</div>
+            <div class="metric-label">Eff. échange</div>
+            <div class="metric-delta" style="color:var(--orange)">▼ -7.3%</div>
+          </div>
+          <div class="metric alert" id="m2-flow">
+            <div class="metric-glow" style="background:var(--orange-glow)"></div>
+            <div class="metric-val" style="color:var(--orange)">16.8</div>
+            <div class="metric-unit">m³/h</div>
+            <div class="metric-label">Débit</div>
+            <div class="metric-delta" style="color:var(--orange)">▼ -1.5</div>
+          </div>
+          <div class="metric alert" id="m2-cop">
+            <div class="metric-glow" style="background:var(--orange-glow)"></div>
+            <div class="metric-val" style="color:var(--orange)">3.9</div>
+            <div class="metric-unit">COP</div>
+            <div class="metric-label">Coefficient</div>
+            <div class="metric-delta" style="color:var(--orange)">▼ -0.9</div>
+          </div>
+        </div>
+        <div class="energy-bar-container" style="margin-top:14px">
+          <div class="energy-bar-label">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--muted)">CONSOMMATION ÉNERGÉTIQUE</span>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--orange)">+12% vs nominal</span>
+          </div>
+          <div class="energy-bar-track">
+            <div class="energy-bar-fill" style="width:58%;background:linear-gradient(90deg,var(--orange),var(--red));box-shadow:0 0 10px rgba(255,149,0,0.4)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Analysis -->
+      <div class="card">
+        <div class="card-label">🤖 Code Chiller · Analyse IA en cours…</div>
+        <div style="font-family:var(--mono);font-size:11px;color:var(--muted);line-height:1.8">
+          <div class="fade-item" id="ai1" style="color:var(--teal)">$ SCAN_REGISTERS(D100..D213)</div>
+          <div class="fade-item" id="ai2">→ D110 = 58% <span style="color:var(--orange)">[SEUIL D205=60% → PROCHE]</span></div>
+          <div class="fade-item" id="ai3">→ Δeff = -7.3% sur 4.2h <span style="color:var(--orange)">[MICRO-DÉRIVE]</span></div>
+          <div class="fade-item" id="ai4">→ Projection: D110 ≥ 60% dans ~38 min</div>
+          <div class="fade-item" id="ai5" style="color:var(--orange)">⚡ Encrassement circuit détecté</div>
+          <div class="fade-item" id="ai6" style="color:var(--orange)">   Couche calcaire estimée: 0.3mm</div>
+          <div class="fade-item" id="ai7" style="color:var(--text)">→ Calcul fenêtre optimale nettoyage…</div>
+          <div class="fade-item" id="ai8" style="color:var(--green)">✓ Micro-pause disponible: T+8 min</div>
+        </div>
+      </div>
+
+      <!-- Graphe avec dérive visible -->
+      <div class="card graph-card">
+        <div class="graph-header">
+          <div class="graph-title">Dérive thermique détectée · Code Chiller</div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--orange);animation:badgePulse 1.5s infinite">⚠ ANOMALIE CONFIRMÉE</div>
+        </div>
+        <div class="graph-area" style="position:relative">
+          <svg class="graph-svg" viewBox="0 0 900 100" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="grad-drift" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(255,149,0,0.3)"/>
+                <stop offset="100%" stop-color="rgba(255,149,0,0)"/>
+              </linearGradient>
+            </defs>
+            <!-- Seuil alerte -->
+            <line x1="0" y1="30" x2="900" y2="30" stroke="rgba(255,149,0,0.5)" stroke-dasharray="6,4" stroke-width="1.5"/>
+            <text x="10" y="27" fill="rgba(255,149,0,0.6)" font-size="8" font-family="monospace">SEUIL CRITIQUE</text>
+            <!-- Courbe normale puis dérive -->
+            <path d="M0,5 C100,4 200,5 300,4 C400,5 450,6 500,8 C550,12 600,18 650,22 C700,27 750,30 800,35 C820,38 850,42 900,45"
+              fill="url(#grad-drift)" stroke="var(--orange)" stroke-width="2.5"/>
+            <!-- Annotation dérive -->
+            <line x1="450" y1="8" x2="450" y2="100" stroke="rgba(255,149,0,0.3)" stroke-dasharray="3,3"/>
+            <text x="455" y="20" fill="rgba(255,149,0,0.8)" font-size="8" font-family="monospace">DÉBUT DÉRIVE</text>
+            <!-- Point actuel -->
+            <circle cx="900" cy="45" r="5" fill="var(--orange)" opacity="0.9">
+              <animate attributeName="r" values="5;8;5" dur="1s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="bottom-bar">
+      <div class="phase-dots">
+        <div class="phase-dot done"></div>
+        <div class="phase-dot active"></div>
+        <div class="phase-dot"></div>
+      </div>
+      <div class="phase-label">PHASE 02 · DÉTECTION PRÉDICTIVE</div>
+      <div class="progress-track"><div class="progress-fill" id="progress2"></div></div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--muted)">Industrie 5.0 · v1.4.0</div>
+    </div>
+    <div class="watermark"><div class="watermark-brand">INDUSTRIE 5.0</div><div class="watermark-sub">Created by Tecteamlab.eu</div></div>
+  </div>
+
+  <!-- ══════════════════════════════════════
+       PHASE 3 — NETTOYAGE AUTOMATIQUE
+  ══════════════════════════════════════ -->
+  <div class="phase" id="phase3">
+
+    <div class="top-bar">
+      <div>
+        <div class="logo">INDUSTRIE<span> 5.0</span></div>
+      </div>
+      <div style="margin-left:12px">
+        <div class="top-title">Industrie 5.0 · Code Chiller · Maintenance préventive auto</div>
+        <div class="top-sub">Cycle automatisé · Durée estimée : 4 min</div>
+      </div>
+      <div class="top-right">
+        <span class="status-badge badge-action" id="badge3">🔄 NETTOYAGE EN COURS</span>
+        <div class="clock" id="clock3">16:55:18</div>
+      </div>
+    </div>
+
+    <div class="phase-title-overlay" id="ptitle3">
+      <div class="phase-number">PHASE 03 / 03</div>
+      <div class="phase-name" style="color:var(--green)">ACTION AUTO</div>
+    </div>
+
+    <div class="content" style="grid-template-rows: auto auto auto;">
+
+      <!-- Métriques en restauration -->
+      <div class="card" style="border-color:rgba(0,212,200,0.3);box-shadow:0 0 30px rgba(0,212,200,0.06)">
+        <div class="card-label">🔄 Restauration thermique · Cycle automatisé</div>
+        <div class="cleaning-beam"></div>
+        <div class="metrics-grid">
+          <div class="metric">
+            <div class="metric-glow" style="background:var(--green-glow);opacity:1"></div>
+            <div class="metric-val" id="r-temp" style="color:var(--teal)">8.1</div>
+            <div class="metric-unit">°C</div>
+            <div class="metric-label">Temp. sortie</div>
+            <div class="metric-delta" style="color:var(--teal);opacity:1">▼ restauration</div>
+          </div>
+          <div class="metric">
+            <div class="metric-glow" style="background:var(--green-glow);opacity:1"></div>
+            <div class="metric-val" id="r-press" style="color:var(--teal)">2.6</div>
+            <div class="metric-unit">bar</div>
+            <div class="metric-label">Δ Pression</div>
+            <div class="metric-delta" style="color:var(--teal);opacity:1">▼ normalisation</div>
+          </div>
+          <div class="metric">
+            <div class="metric-glow" style="background:var(--blue-glow);opacity:1"></div>
+            <div class="metric-val" id="r-load" style="color:var(--teal)">51</div>
+            <div class="metric-unit">%</div>
+            <div class="metric-label">Charge chiller</div>
+            <div class="metric-delta" style="color:var(--teal);opacity:1">▼ en baisse</div>
+          </div>
+          <div class="metric">
+            <div class="metric-glow" style="background:var(--green-glow);opacity:1"></div>
+            <div class="metric-val" id="r-eff" style="color:var(--green)">96.8</div>
+            <div class="metric-unit">%</div>
+            <div class="metric-label">Eff. échange</div>
+            <div class="metric-delta" style="color:var(--green);opacity:1">▲ +5.6%</div>
+          </div>
+          <div class="metric">
+            <div class="metric-glow" style="background:var(--green-glow);opacity:1"></div>
+            <div class="metric-val" style="color:var(--green)">V3</div>
+            <div class="metric-unit"></div>
+            <div class="metric-label">Vanne active</div>
+            <div class="metric-delta" style="color:var(--teal);opacity:1">▸ CLEANING</div>
+          </div>
+          <div class="metric">
+            <div class="metric-glow" style="background:var(--green-glow);opacity:1"></div>
+            <div class="metric-val" id="r-dur" style="color:var(--amber)">2:18</div>
+            <div class="metric-unit">min</div>
+            <div class="metric-label">Durée cycle</div>
+            <div class="metric-delta" style="color:var(--amber);opacity:1">▸ en cours</div>
+          </div>
+        </div>
+        <div class="energy-bar-container" style="margin-top:14px">
+          <div class="energy-bar-label">
+            <span style="font-family:var(--mono);font-size:10px;color:var(--muted)">GAIN ÉNERGÉTIQUE ESTIMÉ</span>
+            <span style="font-family:var(--mono);font-size:10px;color:var(--green)" id="gain-pct">-15%</span>
+          </div>
+          <div class="energy-bar-track">
+            <div class="energy-bar-fill" id="gain-bar" style="width:85%;background:linear-gradient(90deg,var(--teal),var(--green));box-shadow:0 0 12px rgba(0,255,136,0.3)"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Résultats -->
+      <div class="card">
+        <div class="card-label">✅ Résultats · Zéro interruption production</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="fade-item visible" style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--green-glow);border:1px solid rgba(0,255,136,0.2);border-radius:6px">
+            <span style="font-size:18px">📉</span>
+            <div>
+              <div style="font-family:var(--display);font-size:16px;font-weight:700;color:var(--green)">Zéro arrêt d'urgence</div>
+              <div style="font-size:11px;color:var(--muted)">Panne thermique évitée — surchauffe prévenue</div>
+            </div>
+          </div>
+          <div class="fade-item visible" style="transition-delay:0.2s;display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--blue-glow);border:1px solid rgba(0,180,255,0.2);border-radius:6px">
+            <span style="font-size:18px">⚡</span>
+            <div>
+              <div style="font-family:var(--display);font-size:16px;font-weight:700;color:var(--blue)">−15% consommation</div>
+              <div style="font-size:11px;color:var(--muted)">Circuit propre = échange thermique optimal</div>
+            </div>
+          </div>
+          <div class="fade-item visible" style="transition-delay:0.4s;display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(227,179,65,0.08);border:1px solid rgba(227,179,65,0.2);border-radius:6px">
+            <span style="font-size:18px">⚙️</span>
+            <div>
+              <div style="font-family:var(--display);font-size:16px;font-weight:700;color:var(--amber)">+40% durée de vie</div>
+              <div style="font-size:11px;color:var(--muted)">Chiller préservé — interventions humaines −80%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Graphe restauration -->
+      <div class="card graph-card">
+        <div class="graph-header">
+          <div class="graph-title">Restauration thermique · Code Chiller actif</div>
+          <div style="font-family:var(--mono);font-size:11px;color:var(--green)">✓ CYCLE AUTOMATIQUE RÉUSSI</div>
+        </div>
+        <div class="graph-area">
+          <svg class="graph-svg" viewBox="0 0 900 100" preserveAspectRatio="none">
+            <defs>
+              <linearGradient id="grad-restore" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="rgba(0,255,136,0.25)"/>
+                <stop offset="100%" stop-color="rgba(0,255,136,0)"/>
+              </linearGradient>
+            </defs>
+            <line x1="0" y1="30" x2="900" y2="30" stroke="rgba(255,149,0,0.3)" stroke-dasharray="6,4" stroke-width="1"/>
+            <!-- Dérive puis restauration -->
+            <path d="M0,5 C150,4 300,5 400,8 C450,12 500,22 520,42 C530,38 540,30 560,22 C600,14 650,8 700,5 C750,4 800,5 850,4 C870,4 885,4 900,4"
+              fill="url(#grad-restore)" stroke="var(--green)" stroke-width="2.5"/>
+            <!-- Marque nettoyage -->
+            <line x1="520" y1="0" x2="520" y2="100" stroke="rgba(0,212,200,0.4)" stroke-dasharray="3,3"/>
+            <text x="525" y="18" fill="rgba(0,212,200,0.8)" font-size="8" font-family="monospace">NETTOYAGE AUTO</text>
+            <!-- Point actuel -->
+            <circle cx="900" cy="4" r="4" fill="var(--green)">
+              <animate attributeName="r" values="4;7;4" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="bottom-bar">
+      <div class="phase-dots">
+        <div class="phase-dot done"></div>
+        <div class="phase-dot done"></div>
+        <div class="phase-dot active"></div>
+      </div>
+      <div class="phase-label">PHASE 03 · MAINTENANCE PRÉVENTIVE AUTO</div>
+      <div class="progress-track"><div class="progress-fill" id="progress3"></div></div>
+      <div style="font-family:var(--mono);font-size:11px;color:var(--muted)">Industrie 5.0 · v1.4.0</div>
+    </div>
+    <div class="watermark"><div class="watermark-brand">INDUSTRIE 5.0</div><div class="watermark-sub">Created by Tecteamlab.eu</div></div>
+  </div>
+
+</div><!-- /scene -->
+
+<script>
+// ═══════════════════════════════════════
+// TIMELINE CONTROLLER
+// Total: 30 secondes
+// Phase 1: 0-9s   (9s)
+// Phase 2: 9-20s  (11s)
+// Phase 3: 20-30s (10s)
+// ═══════════════════════════════════════
+
+const TOTAL = 30000;
+const PHASES = [
+  { id: 'phase1', start: 0,    end: 9000  },
+  { id: 'phase2', start: 9000, end: 20000 },
+  { id: 'phase3', start: 20000,end: 30000 },
+];
+
+let startTime = null;
+let animFrame = null;
+let currentPhase = -1;
+
+function easeInOut(t) {
+  return t < 0.5 ? 2*t*t : -1+(4-2*t)*t;
+}
+
+// Clock update
+function formatTime(baseH, baseM, baseS, offset_ms) {
+  let total_s = baseH*3600 + baseM*60 + baseS + Math.floor(offset_ms/1000);
+  let h = Math.floor(total_s/3600) % 24;
+  let m = Math.floor((total_s%3600)/60);
+  let s = total_s % 60;
+  return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+}
+
+// Phase transitions
+function showPhase(idx) {
+  PHASES.forEach((p, i) => {
+    const el = document.getElementById(p.id);
+    el.style.opacity = (i === idx) ? '1' : '0';
+    el.style.pointerEvents = (i === idx) ? 'auto' : 'none';
+  });
+}
+
+// Animate numeric value
+function animVal(id, from, to, t, decimals=1) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const val = from + (to - from) * easeInOut(Math.min(t, 1));
+  el.textContent = decimals > 0 ? val.toFixed(decimals) : Math.round(val).toString();
+}
+
+// Phase 1 entrance
+function enterPhase1() {
+  const ptitle = document.getElementById('ptitle1');
+  ptitle.classList.add('visible');
+  setTimeout(() => ptitle.classList.remove('visible'), 2500);
+}
+
+// Phase 2 entrance
+function enterPhase2() {
+  const ptitle = document.getElementById('ptitle2');
+  ptitle.classList.add('visible');
+  setTimeout(() => ptitle.classList.remove('visible'), 2500);
+
+  // Fade in AI analysis lines
+  const delays = [200, 600, 1000, 1400, 1800, 2200, 2600, 3000];
+  ['ai1','ai2','ai3','ai4','ai5','ai6','ai7','ai8'].forEach((id, i) => {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('visible');
+    }, delays[i]);
+  });
+}
+
+// Phase 3 entrance
+function enterPhase3() {
+  const ptitle = document.getElementById('ptitle3');
+  ptitle.classList.add('visible');
+  setTimeout(() => ptitle.classList.remove('visible'), 2500);
+}
+
+// ── MAIN ANIMATION LOOP ──
+function tick(ts) {
+  if (!startTime) startTime = ts;
+  const elapsed = ts - startTime;
+  const t_total = Math.min(elapsed / TOTAL, 1);
+
+  // Determine current phase
+  let phaseIdx = 0;
+  for (let i = 0; i < PHASES.length; i++) {
+    if (elapsed >= PHASES[i].start) phaseIdx = i;
+  }
+
+  // Phase change
+  if (phaseIdx !== currentPhase) {
+    currentPhase = phaseIdx;
+    showPhase(phaseIdx);
+    if (phaseIdx === 0) enterPhase1();
+    if (phaseIdx === 1) enterPhase2();
+    if (phaseIdx === 2) enterPhase3();
+  }
+
+  const ph = PHASES[phaseIdx];
+  const t_phase = (elapsed - ph.start) / (ph.end - ph.start);
+  const t_progress = Math.min(t_phase, 1) * 100;
+
+  // ── PHASE 1 UPDATES ──
+  if (phaseIdx === 0) {
+    const prog = document.getElementById('progress1');
+    if (prog) prog.style.width = t_progress + '%';
+
+    // Clock
+    const cl = document.getElementById('clock1');
+    if (cl) cl.textContent = formatTime(14, 32, 5, elapsed);
+
+    // Slight fluctuation on metrics
+    const noise = Math.sin(elapsed * 0.002) * 0.1;
+    const noiseB = Math.cos(elapsed * 0.003) * 0.05;
+    const vt = document.getElementById('v-temp');
+    if (vt) vt.textContent = (7.2 + noise * 0.3).toFixed(1);
+    const vp = document.getElementById('v-press');
+    if (vp) vp.textContent = (2.4 + noiseB * 0.1).toFixed(1);
+    const vl = document.getElementById('v-load');
+    if (vl) vl.textContent = Math.round(47 + noise * 2);
+  }
+
+  // ── PHASE 2 UPDATES ──
+  if (phaseIdx === 1) {
+    const prog = document.getElementById('progress2');
+    if (prog) prog.style.width = t_progress + '%';
+
+    const cl = document.getElementById('clock2');
+    if (cl) cl.textContent = formatTime(16, 47, 22, elapsed - 9000);
+
+    // Creeping degradation
+    const drift = easeInOut(Math.min(t_phase * 1.2, 1));
+    // metrics drift from nominal towards alert values
+  }
+
+  // ── PHASE 3 UPDATES ──
+  if (phaseIdx === 2) {
+    const prog = document.getElementById('progress3');
+    if (prog) prog.style.width = t_progress + '%';
+
+    const cl = document.getElementById('clock3');
+    if (cl) cl.textContent = formatTime(16, 55, 18, elapsed - 20000);
+
+    // Restoration animation
+    const restore = easeInOut(Math.min(t_phase * 1.5, 1));
+    const rt = document.getElementById('r-temp');
+    if (rt) rt.textContent = (8.9 - (8.9 - 7.3) * restore).toFixed(1);
+    const rp = document.getElementById('r-press');
+    if (rp) rp.textContent = (2.9 - (2.9 - 2.4) * restore).toFixed(1);
+    const rl = document.getElementById('r-load');
+    if (rl) rl.textContent = Math.round(58 - (58 - 46) * restore);
+    const re = document.getElementById('r-eff');
+    if (re) re.textContent = (91.2 + (98.5 - 91.2) * restore).toFixed(1);
+
+    // Timer countdown (4:00 → 1:42)
+    const rd = document.getElementById('r-dur');
+    if (rd) {
+      const totalSec = 240 - Math.floor(t_phase * 200);
+      const mins = Math.floor(totalSec / 60);
+      const secs = totalSec % 60;
+      rd.textContent = `${mins}:${String(secs).padStart(2,'0')}`;
+    }
+  }
+
+  // Loop or stop
+  if (elapsed < TOTAL) {
+    animFrame = requestAnimationFrame(tick);
+  } else {
+    // Restart
+    startTime = null;
+    currentPhase = -1;
+    // Reset AI fade items
+    document.querySelectorAll('.fade-item').forEach(el => {
+      if (!el.classList.contains('visible') || el.closest('#phase3')) return;
+      el.classList.remove('visible');
+    });
+    animFrame = requestAnimationFrame(tick);
+  }
+}
+
+// ── INIT ──
+window.addEventListener('load', () => {
+  // Hide all phases initially
+  PHASES.forEach(p => {
+    const el = document.getElementById(p.id);
+    el.style.opacity = '0';
+    el.style.pointerEvents = 'none';
+    el.style.position = 'absolute';
+    el.style.inset = '0';
+  });
+
+  animFrame = requestAnimationFrame(tick);
+});
+
+// ── KEYBOARD CONTROL (for recording) ──
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space') {
+    if (animFrame) { cancelAnimationFrame(animFrame); animFrame = null; }
+    else { startTime = null; animFrame = requestAnimationFrame(tick); }
+  }
+  if (e.code === 'Digit1') { startTime = performance.now(); currentPhase = -1; }
+  if (e.code === 'Digit2') { startTime = performance.now() - 9000; currentPhase = -1; }
+  if (e.code === 'Digit3') { startTime = performance.now() - 20000; currentPhase = -1; }
+});
+</script>
+</body>
+</html>

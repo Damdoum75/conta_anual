@@ -43,10 +43,28 @@
             background: rgba(0, 0, 0, 0.2);
         }
 
-        .video-container video {
+        .video-embed {
             width: 100%;
-            height: auto;
+            aspect-ratio: 1 / 1;
             display: block;
+            border: 0;
+        }
+
+        .video-links {
+            margin-top: 10px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .video-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 14px;
+            border-radius: 10px;
+            text-decoration: none;
+            font-weight: 700;
         }
 
         .cta-box {
@@ -91,9 +109,11 @@
         </p>
 
         <div class="video-container">
-            <video controls preload="metadata">
-                <source src="/Industrie50_CodeChiller_LinkedIn.mp4" type="video/mp4">
-            </video>
+            <iframe class="video-embed" src="/EQB5_LinkedIn_Video.html" title="Industrie 5.0 — Code Chiller"></iframe>
+        </div>
+        <div class="video-links">
+            <a href="/EQB5_LinkedIn_Video.html" target="_blank" rel="noopener noreferrer">Ouvrir l’animation</a>
+            <a href="/Industrie50_CodeChiller_LinkedIn.mp4" target="_blank" rel="noopener noreferrer">Télécharger la vidéo (MP4)</a>
         </div>
 
         <h2>Cas d'école : Maintenance Prédictive par IA sur un Groupe Froid (Chiller)</h2>
