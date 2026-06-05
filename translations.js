@@ -310,6 +310,10 @@ const translations = {
 };
 
 function getInitialLang() {
+  const params = new URLSearchParams(window.location.search || "");
+  const fromQuery = params.get("lang");
+  if (fromQuery && translations[fromQuery]) return fromQuery;
+
   const saved = localStorage.getItem("lang");
   if (saved && translations[saved]) return saved;
 
@@ -324,6 +328,10 @@ function applyLang(lang) {
   const dict = translations[lang] || translations.en;
   document.documentElement.lang = lang;
   document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
+
+  const u = new URL(window.location.href);
+  u.searchParams.set("lang", lang);
+  window.history.replaceState({}, "", u.toString());
 
   const nodes = document.querySelectorAll("[data-i18n]");
   nodes.forEach((el) => {
