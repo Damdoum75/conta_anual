@@ -67,9 +67,24 @@ class TaxReturnResponse(BaseModel):
     civil_status: Optional[str]
     autonomous_community: Optional[str]
     is_joint_declaration: bool
+    raw_answers: Optional[Dict[str, Any]] = None
     calculation_result: Optional[Dict[str, Any]]
     created_at: datetime
     updated_at: datetime
+
+    @field_validator("raw_answers", mode="before")
+    @classmethod
+    def parse_raw_answers(cls, v):
+        if v is None:
+            return None
+        if isinstance(v, (dict, list)):
+            return v
+        if isinstance(v, str) and v.strip():
+            try:
+                return json.loads(v)
+            except Exception:
+                return None
+        return None
 
     @field_validator("calculation_result", mode="before")
     @classmethod
@@ -144,3 +159,49 @@ class PaymentWebhook(BaseModel):
     payment_intent_id: str
     status: str
     tax_return_id: int
+
+
+class PayslipExtractResponse(BaseModel):
+    month: int
+    filename: str
+    extracted: Dict[str, Any]
+    suggested_raw_answers_delta: Dict[str, Any]
+    totals: Optional[Dict[str, Any]] = None
+    source: Optional[str] = None
+    ocr_used: Optional[bool] = None
+    ocr_error: Optional[str] = None
+
+
+class PayslipMeta(BaseModel):
+    month: int
+    filename: str
+    uploaded_at: datetime
+
+
+class PayslipOcrRequest(BaseModel):
+    month: int = Field(..., ge=1, le=12)
+    ocr_json: Dict[str, Any]
+
+
+class ContentAnalyzeRequest(BaseModel):
+    linkedin_url: Optional[str] = None
+    article_url: Optional[str] = None
+    article_text: Optional[str] = None
+
+
+class ExtractedContentResponse(BaseModel):
+    url: str
+    ok: bool
+    status_code: Optional[int] = None
+    error: Optional[str] = None
+    title: str = ""
+    description: str = ""
+    og_title: str = ""
+    og_description: str = ""
+    text_preview: str = ""
+
+
+class ContentAnalyzeResponse(BaseModel):
+    linkedin: Optional[ExtractedContentResponse] = None
+    article: Optional[ExtractedContentResponse] = None
+    analysis: Dict[str, Any]

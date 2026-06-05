@@ -41,6 +41,8 @@ const translations = {
     contact_title: "Get in Touch",
     contact_email: "Email:",
     contact_phone: "Phone:",
+    contact_linkedin_label: "LinkedIn:",
+    contact_linkedin_cta: "View the post",
     footer_text: "© 2026 TecTeamLab - Tech Solutions & Innovation"
   },
   fr: {
@@ -85,6 +87,8 @@ const translations = {
     contact_title: "Contact",
     contact_email: "Email :",
     contact_phone: "Téléphone :",
+    contact_linkedin_label: "LinkedIn :",
+    contact_linkedin_cta: "Voir le post",
     footer_text: "© 2026 TecTeamLab - Tech Solutions & Innovation"
   },
   es: {
@@ -129,6 +133,8 @@ const translations = {
     contact_title: "Contacto",
     contact_email: "Email:",
     contact_phone: "Teléfono:",
+    contact_linkedin_label: "LinkedIn:",
+    contact_linkedin_cta: "Ver la publicación",
     footer_text: "© 2026 TecTeamLab - Tech Solutions & Innovation"
   },
   ar: {
@@ -173,6 +179,8 @@ const translations = {
     contact_title: "اتصل بنا",
     contact_email: "البريد الإلكتروني:",
     contact_phone: "الهاتف:",
+    contact_linkedin_label: "لينكدإن:",
+    contact_linkedin_cta: "عرض المنشور",
     footer_text: "© 2026 TecTeamLab - حلول تقنية وابتكار"
   }
 };
